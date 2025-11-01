@@ -1,0 +1,1336 @@
+{
+  "openapi": "3.0.0",
+  "paths": {
+    "/auth/login": {
+      "post": {
+        "description": "Authenticates user with email and password",
+        "operationId": "login",
+        "parameters": [
+          {
+            "name": "x-request-id",
+            "in": "header",
+            "description": "Request ID for tracking",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "x-correlation-id",
+            "in": "header",
+            "description": "Correlation ID for tracing",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LoginDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Login successful",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LoginResponseDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "No account found with this email",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "message": "No account found with this email. Please check again or sign up.",
+                    "error": "Unauthorized",
+                    "statusCode": 401
+                  }
+                }
+              }
+            }
+          }
+        },
+        "summary": "User login",
+        "tags": [
+          "Authentication"
+        ]
+      }
+    },
+    "/auth/logout": {
+      "post": {
+        "description": "Logs out user and invalidates session tokens",
+        "operationId": "logout",
+        "parameters": [
+          {
+            "name": "x-request-id",
+            "in": "header",
+            "description": "Request ID for tracking",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "x-correlation-id",
+            "in": "header",
+            "description": "Correlation ID for tracing",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Logout successful",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LogoutResponseDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid logout data",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "message": "Unauthorised",
+                    "error": "Unauthorised",
+                    "statusCode": 401
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "User logout",
+        "tags": [
+          "Authentication"
+        ]
+      }
+    },
+    "/auth/refresh-token": {
+      "post": {
+        "description": "Generates new access token using refresh token from request body",
+        "operationId": "refreshToken",
+        "parameters": [
+          {
+            "name": "x-request-id",
+            "in": "header",
+            "description": "Request ID for tracking",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "x-correlation-id",
+            "in": "header",
+            "description": "Correlation ID for tracing",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RefreshTokenDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Token refresh successful",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RefreshTokenResponseDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Invalid refresh token",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "success": false,
+                    "message": "Invalid refresh token",
+                    "requestId": "12345-67890"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "summary": "Refresh access token",
+        "tags": [
+          "Authentication"
+        ]
+      }
+    },
+    "/auth/health": {
+      "get": {
+        "description": "Returns the health status of the authentication service",
+        "operationId": "getHealth",
+        "parameters": [
+          {
+            "name": "x-request-id",
+            "in": "header",
+            "description": "Request ID for tracking",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "x-correlation-id",
+            "in": "header",
+            "description": "Correlation ID for tracing",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Service is healthy",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "status": "ok",
+                    "service": "lambda4-auth",
+                    "timestamp": "2025-07-29T12:00:00.000Z",
+                    "requestId": "12345-67890"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "summary": "Health check",
+        "tags": [
+          "Authentication"
+        ]
+      }
+    },
+    "/auth/me": {
+      "get": {
+        "description": "Retrieves the authenticated user's profile information including roles and permissions",
+        "operationId": "me",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "User profile retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserProfileDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Failed to retrieve user profile",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "success": false,
+                    "message": "Failed to get user profile",
+                    "error": "SERVICE_UNAVAILABLE",
+                    "statusCode": 503
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "User not authenticated or token invalid",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "success": false,
+                    "message": "User not authenticated or token invalid",
+                    "error": "UNAUTHORIZED",
+                    "statusCode": 401
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get current user profile",
+        "tags": [
+          "Authentication"
+        ]
+      }
+    },
+    "/auth/google/redirect-url": {
+      "post": {
+        "description": "Generates a Google OAuth2 redirect URL for SSO authentication. The frontend should redirect users to this URL to initiate the Google SSO flow.",
+        "operationId": "generateGoogleRedirectUrl",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "description": "Device and client information for the SSO request",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GoogleRedirectUrlDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Google SSO redirect URL generated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GoogleRedirectUrlResponseDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request data or Google OAuth configuration missing"
+          },
+          "401": {
+            "description": "Google OAuth configuration is not available"
+          }
+        },
+        "summary": "Generate Google SSO redirect URL",
+        "tags": [
+          "Authentication"
+        ]
+      }
+    },
+    "/auth/apple/redirect-url": {
+      "post": {
+        "description": "Generates an Apple OAuth2 redirect URL for SSO authentication. The frontend should redirect users to this URL to initiate the Apple SSO flow.",
+        "operationId": "generateAppleRedirectUrl",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "description": "Device and client information for the SSO request",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AppleRedirectUrlDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Apple SSO redirect URL generated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AppleRedirectUrlResponseDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request data or Apple OAuth configuration missing"
+          },
+          "401": {
+            "description": "Apple OAuth configuration is not available"
+          }
+        },
+        "summary": "Generate Apple SSO redirect URL",
+        "tags": [
+          "Authentication"
+        ]
+      }
+    },
+    "/auth/login/google": {
+      "post": {
+        "description": "Authenticates user using Google OAuth2 authorisation code",
+        "operationId": "googleLogin",
+        "parameters": [
+          {
+            "name": "authorization-code",
+            "required": true,
+            "in": "header",
+            "description": "Google OAuth authorization code",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "oauth-state",
+            "required": true,
+            "in": "header",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "x-request-id",
+            "in": "header",
+            "description": "Request ID for tracking",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "x-correlation-id",
+            "in": "header",
+            "description": "Correlation ID for tracing",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GoogleLoginDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Google login successful",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GoogleLoginResponseDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request data or Google OAuth configuration missing"
+          },
+          "401": {
+            "description": "Invalid Google authorisation code or email not verified"
+          }
+        },
+        "summary": "Google SSO login",
+        "tags": [
+          "Authentication"
+        ]
+      }
+    },
+    "/auth/login/apple": {
+      "post": {
+        "description": "Authenticates user using Apple OAuth2 authorisation code",
+        "operationId": "appleLogin",
+        "parameters": [
+          {
+            "name": "authorization-code",
+            "required": true,
+            "in": "header",
+            "description": "Apple OAuth authorization code",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "oauth-state",
+            "required": true,
+            "in": "header",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "x-request-id",
+            "in": "header",
+            "description": "Request ID for tracking",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "x-correlation-id",
+            "in": "header",
+            "description": "Correlation ID for tracing",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AppleLoginDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Apple login successful",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AppleLoginResponseDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request data or Apple OAuth configuration missing"
+          },
+          "401": {
+            "description": "Invalid Apple authorisation code or email not available"
+          }
+        },
+        "summary": "Apple SSO login",
+        "tags": [
+          "Authentication"
+        ]
+      }
+    },
+    "/users": {
+      "post": {
+        "operationId": "createUser",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateUserDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "User created successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserEntity"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request - validation failed"
+          },
+          "409": {
+            "description": "Conflict - user already exists"
+          }
+        },
+        "summary": "Create a new user",
+        "tags": [
+          "Users"
+        ]
+      }
+    },
+    "/users/{id}": {
+      "put": {
+        "operationId": "updateUser",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "User ID",
+            "schema": {
+              "example": "123e4567-e89b-12d3-a456-426614174000"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateUserDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "User updated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserEntity"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request - validation failed or user not found"
+          },
+          "409": {
+            "description": "Conflict - email or phone already exists"
+          }
+        },
+        "summary": "Update user information",
+        "tags": [
+          "Users"
+        ]
+      },
+      "delete": {
+        "operationId": "deleteUser",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "User ID",
+            "schema": {
+              "example": "123e4567-e89b-12d3-a456-426614174000"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "User deleted successfully"
+          },
+          "404": {
+            "description": "Not found - user not found"
+          }
+        },
+        "summary": "Delete user",
+        "tags": [
+          "Users"
+        ]
+      }
+    },
+    "/seed/execute": {
+      "post": {
+        "operationId": "executeSeed",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ExecuteSeedDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Seed executed successfully or already completed"
+          },
+          "400": {
+            "description": "Invalid request body"
+          },
+          "500": {
+            "description": "Seed execution failed"
+          }
+        },
+        "summary": "Execute a single seed service",
+        "tags": [
+          "Database Seeding"
+        ]
+      }
+    },
+    "/seed/execute-all": {
+      "post": {
+        "operationId": "executeSeeds",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ExecuteSeedsDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "All seeds executed successfully or already completed"
+          },
+          "400": {
+            "description": "Invalid request body"
+          },
+          "500": {
+            "description": "Some seed executions failed"
+          }
+        },
+        "summary": "Execute multiple seed services",
+        "tags": [
+          "Database Seeding"
+        ]
+      }
+    },
+    "/seed/status": {
+      "get": {
+        "operationId": "getSeedStatuses",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Seed statuses retrieved successfully"
+          },
+          "500": {
+            "description": "Failed to retrieve seed statuses"
+          }
+        },
+        "summary": "Get status of all seeds",
+        "tags": [
+          "Database Seeding"
+        ]
+      }
+    },
+    "/seed/status/{seedName}": {
+      "get": {
+        "operationId": "getSeedStatus",
+        "parameters": [
+          {
+            "name": "seedName",
+            "required": true,
+            "in": "path",
+            "description": "Name of the seed to check",
+            "schema": {
+              "example": "user-seed",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Seed status retrieved successfully"
+          },
+          "400": {
+            "description": "Invalid seed name parameter"
+          },
+          "500": {
+            "description": "Failed to retrieve seed status"
+          }
+        },
+        "summary": "Get status of a specific seed",
+        "tags": [
+          "Database Seeding"
+        ]
+      }
+    },
+    "/seed/reset/{seedName}": {
+      "delete": {
+        "operationId": "resetSeed",
+        "parameters": [
+          {
+            "name": "seedName",
+            "required": true,
+            "in": "path",
+            "description": "Name of the seed to reset",
+            "schema": {
+              "example": "user-seed",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Seed reset successfully"
+          },
+          "400": {
+            "description": "Invalid seed name parameter"
+          },
+          "500": {
+            "description": "Failed to reset seed"
+          }
+        },
+        "summary": "Reset a seed to allow re-execution (development only)",
+        "tags": [
+          "Database Seeding"
+        ]
+      }
+    }
+  },
+  "info": {
+    "title": "Service API",
+    "description": "Service API",
+    "version": "1.0.0",
+    "contact": {}
+  },
+  "tags": [],
+  "servers": [
+    {
+      "url": "http://localhost:3002/api"
+    }
+  ],
+  "components": {
+    "securitySchemes": {
+      "bearer": {
+        "scheme": "bearer",
+        "bearerFormat": "JWT",
+        "type": "http",
+        "description": "JWT token for authenticated endpoints"
+      },
+      "x-api-key": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "x-api-key",
+        "description": "API Key required by API Gateway for all requests (validated at gateway level)"
+      }
+    },
+    "schemas": {
+      "LoginDto": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "description": "User email address",
+            "example": "user@example.com",
+            "minLength": 5,
+            "maxLength": 50
+          },
+          "password": {
+            "type": "string",
+            "description": "User password",
+            "example": "SecurePassword123!",
+            "minLength": 1
+          },
+          "deviceId": {
+            "type": "string",
+            "description": "Unique device identifier",
+            "example": "device_12345"
+          },
+          "userAgent": {
+            "type": "string",
+            "description": "User agent string from the client",
+            "example": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"
+          }
+        },
+        "required": [
+          "email",
+          "password"
+        ]
+      },
+      "AuthTokensDto": {
+        "type": "object",
+        "properties": {
+          "accessToken": {
+            "type": "string",
+            "description": "JWT access token",
+            "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+          },
+          "refreshToken": {
+            "type": "string",
+            "description": "JWT refresh token",
+            "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+          },
+          "expiresIn": {
+            "type": "number",
+            "description": "Token expiration time in seconds",
+            "example": 900
+          },
+          "tokenType": {
+            "type": "string",
+            "description": "Token type",
+            "example": "Bearer"
+          }
+        },
+        "required": [
+          "accessToken",
+          "refreshToken",
+          "expiresIn",
+          "tokenType"
+        ]
+      },
+      "LoginResponseDto": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "description": "Success status",
+            "example": true
+          },
+          "message": {
+            "type": "string",
+            "description": "Response message",
+            "example": "Login successful"
+          },
+          "data": {
+            "description": "Authentication tokens",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/AuthTokensDto"
+              }
+            ]
+          }
+        },
+        "required": [
+          "success",
+          "message",
+          "data"
+        ]
+      },
+      "LogoutResponseDto": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "description": "Success status",
+            "example": true
+          },
+          "message": {
+            "type": "string",
+            "description": "Response message",
+            "example": "Successfully logged out"
+          }
+        },
+        "required": [
+          "success",
+          "message"
+        ]
+      },
+      "RefreshTokenDto": {
+        "type": "object",
+        "properties": {
+          "refreshToken": {
+            "type": "string",
+            "description": "JWT refresh token",
+            "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+          },
+          "deviceId": {
+            "type": "string",
+            "description": "Unique device identifier",
+            "example": "device_12345"
+          },
+          "userAgent": {
+            "type": "string",
+            "description": "User agent string from the client",
+            "example": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"
+          }
+        },
+        "required": [
+          "refreshToken"
+        ]
+      },
+      "RefreshTokenResponseDto": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "description": "Success status",
+            "example": true
+          },
+          "message": {
+            "type": "string",
+            "description": "Response message",
+            "example": "Tokens refreshed successfully"
+          },
+          "data": {
+            "description": "New authentication tokens",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/AuthTokensDto"
+              }
+            ]
+          }
+        },
+        "required": [
+          "success",
+          "message",
+          "data"
+        ]
+      },
+      "UserProfileDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "User ID"
+          },
+          "firstName": {
+            "type": "string",
+            "description": "User name"
+          },
+          "lastName": {
+            "type": "string",
+            "description": "User last name"
+          },
+          "email": {
+            "type": "string",
+            "description": "User email"
+          },
+          "phone": {
+            "type": "string",
+            "description": "User phone number"
+          },
+          "isActive": {
+            "type": "number",
+            "description": "User status",
+            "enum": [
+              1,
+              0
+            ]
+          },
+          "createdAt": {
+            "type": "string",
+            "description": "User creation timestamp"
+          },
+          "updatedAt": {
+            "type": "string",
+            "description": "User last update timestamp"
+          }
+        },
+        "required": [
+          "id",
+          "firstName",
+          "lastName",
+          "email",
+          "isActive",
+          "createdAt",
+          "updatedAt"
+        ]
+      },
+      "GoogleRedirectUrlDto": {
+        "type": "object",
+        "properties": {
+          "deviceId": {
+            "type": "string",
+            "description": "Unique device identifier",
+            "example": "device_12345"
+          },
+          "userAgent": {
+            "type": "string",
+            "description": "User agent string from the client",
+            "example": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"
+          },
+          "ipAddress": {
+            "type": "string",
+            "description": "IP address of the client"
+          }
+        }
+      },
+      "GoogleRedirectUrlResponseDto": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "description": "Success status",
+            "example": true
+          },
+          "data": {
+            "type": "object",
+            "description": "Google SSO redirect URL and state",
+            "example": {
+              "redirectUrl": "https://accounts.google.com/o/oauth2/v2/auth?client_id=...",
+              "state": "random-state-string-12345"
+            }
+          },
+          "message": {
+            "type": "string",
+            "description": "Response message",
+            "example": "Google SSO redirect URL generated successfully"
+          }
+        },
+        "required": [
+          "success",
+          "data",
+          "message"
+        ]
+      },
+      "AppleRedirectUrlDto": {
+        "type": "object",
+        "properties": {
+          "deviceId": {
+            "type": "string",
+            "description": "Unique device identifier",
+            "example": "device_12345"
+          },
+          "userAgent": {
+            "type": "string",
+            "description": "User agent string from the client",
+            "example": "Mozilla/5.0 (iPhone; CPU iPhone OS 15_0 like Mac OS X)"
+          },
+          "ipAddress": {
+            "type": "string",
+            "description": "IP address of the client"
+          }
+        }
+      },
+      "AppleRedirectUrlResponseDto": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "description": "Success status",
+            "example": true
+          },
+          "data": {
+            "type": "object",
+            "description": "Apple SSO redirect URL and state",
+            "example": {
+              "redirectUrl": "https://appleid.apple.com/auth/authorize?client_id=...",
+              "state": "random-state-string-12345"
+            }
+          },
+          "message": {
+            "type": "string",
+            "description": "Response message",
+            "example": "Apple SSO redirect URL generated successfully"
+          }
+        },
+        "required": [
+          "success",
+          "data",
+          "message"
+        ]
+      },
+      "GoogleLoginDto": {
+        "type": "object",
+        "properties": {
+          "deviceId": {
+            "type": "string",
+            "description": "Unique device identifier",
+            "example": "device_12345"
+          },
+          "userAgent": {
+            "type": "string",
+            "description": "User agent string from the client",
+            "example": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"
+          },
+          "ipAddress": {
+            "type": "string",
+            "description": "IP address of the client"
+          }
+        }
+      },
+      "GoogleLoginResponseDto": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "description": "Success status",
+            "example": true
+          },
+          "data": {
+            "description": "Authentication tokens",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/AuthTokensDto"
+              }
+            ]
+          },
+          "message": {
+            "type": "string",
+            "description": "Response message",
+            "example": "SSO login successful"
+          }
+        },
+        "required": [
+          "success",
+          "data",
+          "message"
+        ]
+      },
+      "AppleLoginDto": {
+        "type": "object",
+        "properties": {
+          "deviceId": {
+            "type": "string",
+            "description": "Unique device identifier",
+            "example": "device_12345"
+          },
+          "userAgent": {
+            "type": "string",
+            "description": "User agent string from the client",
+            "example": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"
+          },
+          "ipAddress": {
+            "type": "string",
+            "description": "IP address of the client"
+          }
+        }
+      },
+      "AppleLoginResponseDto": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "description": "Success status",
+            "example": true
+          },
+          "data": {
+            "description": "Authentication tokens",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/AuthTokensDto"
+              }
+            ]
+          },
+          "message": {
+            "type": "string",
+            "description": "Response message",
+            "example": "SSO login successful"
+          }
+        },
+        "required": [
+          "success",
+          "data",
+          "message"
+        ]
+      },
+      "CreateUserDto": {
+        "type": "object",
+        "properties": {
+          "firstName": {
+            "type": "string",
+            "description": "First name",
+            "example": "John"
+          },
+          "lastName": {
+            "type": "string",
+            "description": "Last name",
+            "example": "Doe"
+          },
+          "email": {
+            "type": "string",
+            "description": "Email",
+            "example": "john.doe@example.com"
+          },
+          "phone": {
+            "type": "string",
+            "description": "Phone number",
+            "example": "+1234567890"
+          },
+          "dateOfBirth": {
+            "type": "string",
+            "description": "Date of birth",
+            "example": "1990-01-15"
+          },
+          "password": {
+            "type": "string",
+            "description": "Password",
+            "example": "Password@123"
+          }
+        },
+        "required": [
+          "firstName",
+          "lastName",
+          "email",
+          "phone",
+          "dateOfBirth",
+          "password"
+        ]
+      },
+      "UserEntity": {
+        "type": "object",
+        "properties": {}
+      },
+      "UpdateUserDto": {
+        "type": "object",
+        "properties": {
+          "firstName": {
+            "type": "string",
+            "description": "First name",
+            "example": "John"
+          },
+          "lastName": {
+            "type": "string",
+            "description": "Last name",
+            "example": "Doe"
+          },
+          "dateOfBirth": {
+            "type": "string",
+            "description": "Date of birth",
+            "example": "1990-01-15"
+          },
+          "isActive": {
+            "type": "boolean",
+            "description": "User active status",
+            "example": true
+          }
+        }
+      },
+      "ExecuteSeedDto": {
+        "type": "object",
+        "properties": {
+          "seedName": {
+            "type": "string",
+            "description": "Name of the seed service to execute",
+            "example": "user-seed"
+          },
+          "description": {
+            "type": "string",
+            "description": "Optional description of the seed operation",
+            "example": "Create test users for development"
+          },
+          "metadata": {
+            "type": "object",
+            "description": "Optional metadata for the seed execution",
+            "example": {
+              "environment": "development",
+              "version": "1.0.0"
+            }
+          }
+        },
+        "required": [
+          "seedName"
+        ]
+      },
+      "ExecuteSeedsDto": {
+        "type": "object",
+        "properties": {
+          "seedServices": {
+            "description": "Array of seed services to execute",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ExecuteSeedDto"
+            }
+          }
+        },
+        "required": [
+          "seedServices"
+        ]
+      }
+    }
+  },
+  "security": [
+    {
+      "x-api-key": []
+    }
+  ]
+}
